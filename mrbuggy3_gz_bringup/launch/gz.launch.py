@@ -58,7 +58,7 @@ def generate_launch_description():
         PathJoinSubstitution([FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'])),
         launch_arguments={
             'gz_args': [vehicle , '_world.sdf',
-                ' --gui-config ', PathJoinSubstitution([FindPackageShare('mrbuggy3_gazebo_bringup'), 'config', 'gui.config']),
+                ' --gui-config ', PathJoinSubstitution([FindPackageShare('mrbuggy3_gz_bringup'), 'config', 'gui.config']),
                 ' -v 0',
                 ' -r']
         }.items(),
