@@ -277,7 +277,7 @@
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://RPLIDAR_A1M8/meshes/rplidar.dae</uri>
+            <uri>model://mrbuggy3/meshes/rplidar.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -297,7 +297,7 @@
             <resolution>0.01</resolution>
           </range>
         </lidar>
-        <gz_frame_id>base_laser</gz_frame_id>
+        <gz_frame_id>rplidar_link</gz_frame_id>
         <alwaysOn>1</alwaysOn>
         <visualize>true</visualize>
         <update_rate>10</update_rate>

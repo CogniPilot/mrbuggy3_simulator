@@ -17,13 +17,13 @@ ARGUMENTS = [
     DeclareLaunchArgument('rviz', default_value='false',
                           choices=['true', 'false'],
                           description='Start rviz.'),
-    DeclareLaunchArgument('slam', default_value='off',
-                          choices=['off', 'sync', 'async'],
-                          description='Whether to run a SLAM'),
-    DeclareLaunchArgument('localization', default_value='false',
+    DeclareLaunchArgument('sync', default_value='true',
                           choices=['true', 'false'],
-                          description='Whether to run localization'),
-    DeclareLaunchArgument('nav2', default_value='false',
+                          description='Run async or sync SLAM'),
+    DeclareLaunchArgument('localization', default_value='slam',
+                          choices=['off', 'localization', 'slam'],
+                          description='Whether to run localization or SLAM'),
+    DeclareLaunchArgument('nav2', default_value='true',
                           choices=['true', 'false'],
                           description='Run nav2'),
     DeclareLaunchArgument('use_sim_time', default_value='true',
@@ -63,10 +63,15 @@ def generate_launch_description():
         [pkg_mrbuggy3_gz_bringup, 'launch', 'ros_gz_bridge.launch.py'])
     rviz_launch = PathJoinSubstitution(
         [pkg_mrbuggy3_rviz, 'launch', 'view_robot.launch.py'])
-    nav_launch = PathJoinSubstitution(
-        [pkg_mrbuggy3_nav2, 'launch', 'nav2_bringup.launch.py'])
+    nav2_launch = PathJoinSubstitution(
+        [pkg_mrbuggy3_nav2, 'launch', 'nav2.launch.py'])
+    slam_launch = PathJoinSubstitution(
+        [pkg_mrbuggy3_nav2, 'launch', 'slam.launch.py'])
+    localization_launch = PathJoinSubstitution(
+        [pkg_mrbuggy3_nav2, 'launch', 'localization.launch.py'])
     robot_description_launch = PathJoinSubstitution(
         [pkg_mrbuggy3_description, 'launch', 'robot_description.launch.py'])
+
 
     # Parameters
     param_file_cmd = DeclareLaunchArgument(
@@ -155,35 +160,61 @@ def generate_launch_description():
     # ROS GZ bridge
     mrbuggy3_ros_gz_bridge = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([mrbuggy3_ros_gz_bridge_launch]),
-        launch_arguments=[('model', LaunchConfiguration('model'))]
+        launch_arguments=[
+            ('model', LaunchConfiguration('model')),
+            ('use_sim_time', LaunchConfiguration('use_sim_time'))
+        ]
     )
 
     # Rviz2
     rviz2 = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([rviz_launch]),
         condition=IfCondition(LaunchConfiguration('rviz')),
+        launch_arguments=[
+            ('model', LaunchConfiguration('model')),
+            ('use_sim_time', LaunchConfiguration('use_sim_time'))
+        ]
     )
 
     # NAV2
     nav2 = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([nav_launch]),
-        launch_arguments=[('slam', LaunchConfiguration('slam')),
-                          ('nav2', LaunchConfiguration('nav2')),
-                          ('localization', LaunchConfiguration('localization')),
-                          ('use_sim_time', LaunchConfiguration('use_sim_time')),
-                          ('map', LaunchConfiguration('map'))]
+        PythonLaunchDescriptionSource([nav2_launch]),
+        condition=IfCondition(LaunchConfiguration('nav2')),
+        launch_arguments=[
+            ('use_sim_time', LaunchConfiguration('use_sim_time'))
+        ]
+    )
+
+    slam = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([slam_launch]),
+        condition=LaunchConfigurationEquals('localization', 'slam'),
+        launch_arguments=[
+            ('sync', LaunchConfiguration('sync')),
+            ('use_sim_time', LaunchConfiguration('use_sim_time'))
+        ]
+    )
+
+    localization = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([localization_launch]),
+        condition=LaunchConfigurationEquals('localization', 'localization'),
+        launch_arguments=[
+            ('map', LaunchConfiguration('map')),
+            ('use_sim_time', LaunchConfiguration('use_sim_time'))
+        ]
     )
 
     # RPLIDAR static transforms
-    rplidar_stf = Node(
-            name='rplidar_stf',
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            output='screen',
-            arguments=[
-                '0', '0', '0', '0', '0.0', '0.0',
-                'rplidar_link', [LaunchConfiguration('robot_name'), '/rplidar_link/rplidar']]
-        )
+    #rplidar_stf = Node(
+    #    name='rplidar_stf',
+    #    package='tf2_ros',
+    #    executable='static_transform_publisher',
+    #    output='screen',
+    #    arguments=[
+    #        '--x', '0.0', '--y', '0.0', '--z', '0.0',
+    #        '--roll', '0.0', '--pitch', '0.0', '--yaw', '0.0',
+    #        '--frame-id', 'rplidar_link', '--child-frame-id', [LaunchConfiguration('robot_name'), '/rplidar_link/rplidar']],
+        #parameters=[{'use_sim_time': use_sim_time}],
+    #    )
 
     # Define LaunchDescription variable
     ld = LaunchDescription(ARGUMENTS)
@@ -199,6 +230,8 @@ def generate_launch_description():
     ld.add_action(robot_description)
     ld.add_action(spawn_robot)
     ld.add_action(nav2)
-    ld.add_action(rplidar_stf)
+    ld.add_action(slam)
+    ld.add_action(localization)
+    #ld.add_action(rplidar_stf)
     return ld
 
