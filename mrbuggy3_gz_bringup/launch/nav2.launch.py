@@ -44,6 +44,8 @@ def generate_launch_description():
     # Directories
     pkg_mrbuggy3_gz_bringup = get_package_share_directory(
         'mrbuggy3_gz_bringup')
+    pkg_mrbuggy3_gz_resource = get_package_share_directory(
+        'mrbuggy3_gz_resource')
     pkg_mrbuggy3_description = get_package_share_directory(
         'mrbuggy3_description')
     pkg_mrbuggy3_nav2 = get_package_share_directory(
@@ -62,7 +64,7 @@ def generate_launch_description():
     rviz_launch = PathJoinSubstitution(
         [pkg_mrbuggy3_rviz, 'launch', 'view_robot.launch.py'])
     nav_launch = PathJoinSubstitution(
-        [pkg_mrbuggy3_nav2, 'launch', 'nav_bringup.launch.py'])
+        [pkg_mrbuggy3_nav2, 'launch', 'nav2_bringup.launch.py'])
     robot_description_launch = PathJoinSubstitution(
         [pkg_mrbuggy3_description, 'launch', 'robot_description.launch.py'])
 
@@ -79,6 +81,27 @@ def generate_launch_description():
             [pkg_mrbuggy3_nav2, 'maps', 'depot.yaml']),
         description='Full path to map yaml file to load')
 
+    declare_x = DeclareLaunchArgument(
+        'x',
+        default_value=['0'],
+        description='x position')
+
+    declare_y = DeclareLaunchArgument(
+        'y',
+        default_value=['0'],
+        description='y position')
+
+    declare_z = DeclareLaunchArgument(
+        'z',
+        default_value=['0'],
+        description='z position')
+
+    declare_yaw = DeclareLaunchArgument(
+        'yaw',
+        default_value=['0'],
+        description='yaw position')
+
+
     # Launch configurations
     x = LaunchConfiguration('x')
     y = LaunchConfiguration('y')
@@ -92,7 +115,9 @@ def generate_launch_description():
         launch_arguments=[
             ('gz_args', [
                 LaunchConfiguration('world'), '.sdf',
-                ' -v 4',
+                ' -v 1',
+                ' -s ',
+                ' -r ',
                 ' --gui-config ', PathJoinSubstitution(
                     [pkg_mrbuggy3_gz_bringup,
                      'gui',
@@ -113,12 +138,18 @@ def generate_launch_description():
         package='ros_gz_sim',
         executable='create',
         arguments=[
+            '-world', LaunchConfiguration('world'),
             '-name', LaunchConfiguration('robot_name'),
             '-x', x,
             '-y', y,
             '-z', z,
             '-Y', yaw,
-            '-topic', 'robot_description'],
+            '-file', PathJoinSubstitution(
+              [pkg_mrbuggy3_gz_resource,
+              'models',
+              LaunchConfiguration('robot_name'),
+              'model.sdf'])
+        ],
         output='screen')
 
     # ROS GZ bridge
@@ -158,6 +189,10 @@ def generate_launch_description():
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(param_file_cmd)
     ld.add_action(declare_map_yaml_cmd)
+    ld.add_action(declare_x)
+    ld.add_action(declare_y)
+    ld.add_action(declare_z)
+    ld.add_action(declare_yaw)
     ld.add_action(gz_sim)
     ld.add_action(mrbuggy3_ros_gz_bridge)
     ld.add_action(rviz2)

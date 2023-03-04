@@ -17,8 +17,8 @@ ARGUMENTS = [
                           description='Robot name'),
     DeclareLaunchArgument('world', default_value='depot',
                           description='World name'),
-    DeclareLaunchArgument('model', default_value='standard',
-                          choices=['standard', 'lite'],
+    DeclareLaunchArgument('model', default_value='lidar',
+                          choices=['base', 'lidar'],
                           description='MR Buggy3 Model'),
 ]
 
@@ -33,7 +33,7 @@ def generate_launch_description():
     mrbuggy3_ros_gz_bridge_launch = PathJoinSubstitution(
         [pkg_mrbuggy3_gz_bringup, 'launch', 'ros_gz_bridge_base.launch.py'])
 
-    base_bridge = IncludeLaunchDescription(
+    ros_gz_bridge = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([mrbuggy3_ros_gz_bridge_launch]),
         launch_arguments=[
             ('robot_name', LaunchConfiguration('robot_name')),
@@ -43,7 +43,7 @@ def generate_launch_description():
 
     # lidar bridge
     lidar_bridge = Node(
-        package='ros_ign_bridge',
+        package='ros_gz_bridge',
         executable='parameter_bridge',
         namespace=namespace,
         name='lidar_bridge',
@@ -55,7 +55,7 @@ def generate_launch_description():
             ['/world/', LaunchConfiguration('world'),
              '/model/', LaunchConfiguration('robot_name'),
              '/link/rplidar_link/sensor/rplidar/scan' +
-             '@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan']
+             '@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan']
         ],
         remappings=[
             (['/world/', LaunchConfiguration('world'),

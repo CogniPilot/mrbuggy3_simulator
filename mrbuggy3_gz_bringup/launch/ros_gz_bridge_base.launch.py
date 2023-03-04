@@ -80,12 +80,12 @@ def generate_launch_description():
                                    'use_sim_time': use_sim_time
                                }],
                                arguments=[
-                                   ['/model/', LaunchConfiguration('robot_name'), '/tf' +
+                                   ['/model/', LaunchConfiguration('robot_name'), '/pose' +
                                     '@tf2_msgs/msg/TFMessage' +
                                     '[gz.msgs.Pose_V']
                                ],
                                remappings=[
-                                   (['/model/', LaunchConfiguration('robot_name'), '/tf'], '/tf')
+                                   (['/model/', LaunchConfiguration('robot_name'), '/pose'], '/tf')
                                ])
 
     # Create launch description and add actions
