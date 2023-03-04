@@ -432,6 +432,26 @@
       <wheel_base>.2255</wheel_base>
       <wheel_separation>.2</wheel_separation>
     </plugin>
+    <!-- <plugin
+      filename="gz-sim-ackermann-steering-system"
+      name="gz::sim::systems::AckermannSteering">
+      <left_joint>FrontLeftwheelJoint</left_joint>
+      <left_joint>RearLeftwheelJoint</left_joint>
+      <right_joint>RearRightwheelJoint</right_joint>
+      <right_joint>FrontRightwheelJoint</right_joint>
+      <left_steering_joint>FrontLeftwheelSteeringJoint</left_steering_joint>
+      <right_steering_joint>FrontRightwheelSteeringJoint</right_steering_joint>
+      <kingpin_width>0.199</kingpin_width>
+      <steering_limit>0.4</steering_limit>
+      <wheel_base>.2255</wheel_base>
+      <wheel_separation>.2</wheel_separation>
+      <wheel_radius>0.0365</wheel_radius>
+      <min_velocity>-10.0</min_velocity>
+      <max_velocity>10.0</max_velocity>
+      <min_acceleration>-10</min_acceleration>
+      <max_acceleration>10</max_acceleration>
+      <topic>/cmd_vel</topic>
+    </plugin> -->
     <plugin
       filename="gz-sim-odometry-publisher-system"
       name="gz::sim::systems::OdometryPublisher">

@@ -121,7 +121,6 @@ def generate_launch_description():
             ('gz_args', [
                 LaunchConfiguration('world'), '.sdf',
                 ' -v 1',
-                ' -s ',
                 ' -r ',
                 ' --gui-config ', PathJoinSubstitution(
                     [pkg_mrbuggy3_gz_bringup,
