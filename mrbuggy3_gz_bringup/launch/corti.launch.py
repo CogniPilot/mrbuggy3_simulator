@@ -76,11 +76,11 @@ def generate_launch_description():
          # trajectory from ROS to Gazesbo
          '/traj@synapse_msgs/msg/BezierTrajectory@gz.msgs.BezierTrajectory',
          # odometry from Gazebo model to ROS
-         '/model/mrb3s/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
-         '/model/mrb3s/odometry_with_covariance@nav_msgs/msg/Odometry@'
+         '/model/mrbuggy3/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+         '/model/mrbuggy3/odometry_with_covariance@nav_msgs/msg/Odometry@'
          'gz.msgs.OdometryWithCovariance',
          # Sensors
-         '/world/default/model/mrb3s/link/RPLIDAR_A1M8/Base/sensor/lidar/scan@'
+         '/world/default/model/mrbuggy3/link/RPLIDAR_A1M8/Base/sensor/lidar/scan@'
          'sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
          # ros args
          '--ros-args', '--log-level', logger,
