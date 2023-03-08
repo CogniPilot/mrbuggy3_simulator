@@ -20,6 +20,9 @@ ARGUMENTS = [
     DeclareLaunchArgument('model', default_value='lidar',
                           choices=['base', 'lidar'],
                           description='MR Buggy3 Model'),
+    DeclareLaunchArgument('bezier', default_value='true',
+                          choices=['true', 'false'],
+                          description='Use bezier'),
 ]
 
 
@@ -40,6 +43,20 @@ def generate_launch_description():
             ('world', LaunchConfiguration('world'))
         ]
     )
+
+    # bezier bridge
+    bezier_bridge = Node(package='ros_gz_bridge', executable='parameter_bridge',
+        namespace=namespace,
+        name='bezier_bridge',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time
+        }],
+        arguments=[
+            '/traj@synapse_msgs/msg/BezierTrajectory]gz.msgs.BezierTrajectory',
+        ],
+        condition=LaunchConfigurationEquals('bezier', 'true')
+        )
 
     # lidar bridge
     lidar_bridge = Node(
@@ -68,5 +85,6 @@ def generate_launch_description():
     # Define LaunchDescription variable
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(ros_gz_bridge)
+    ld.add_action(bezier_bridge)
     ld.add_action(lidar_bridge)
     return ld
