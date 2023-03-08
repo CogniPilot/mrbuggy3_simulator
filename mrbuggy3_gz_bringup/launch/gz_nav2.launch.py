@@ -14,7 +14,7 @@ from launch_ros.actions import Node
 
 
 ARGUMENTS = [
-    DeclareLaunchArgument('rviz', default_value='false',
+    DeclareLaunchArgument('rviz', default_value='true',
                           choices=['true', 'false'],
                           description='Start rviz.'),
     DeclareLaunchArgument('sync', default_value='true',
@@ -26,6 +26,12 @@ ARGUMENTS = [
     DeclareLaunchArgument('nav2', default_value='true',
                           choices=['true', 'false'],
                           description='Run nav2'),
+    DeclareLaunchArgument('corti', default_value='true',
+                          choices=['true', 'false'],
+                          description='Run corti'),
+    DeclareLaunchArgument('cerebri', default_value='true',
+                          choices=['true', 'false'],
+                          description='Run corti'),
     DeclareLaunchArgument('use_sim_time', default_value='true',
                           choices=['true', 'false'],
                           description='use_sim_time'),
@@ -52,7 +58,8 @@ def generate_launch_description():
         'mrbuggy3_nav2')
     pkg_mrbuggy3_rviz = get_package_share_directory(
         'mrbuggy3_rviz')
-
+    pkg_corti = get_package_share_directory('corti')
+    pkg_cerebri = get_package_share_directory('cerebri')
     pkg_ros_gz_sim = get_package_share_directory(
         'ros_gz_sim')
 
@@ -65,6 +72,10 @@ def generate_launch_description():
         [pkg_mrbuggy3_rviz, 'launch', 'view_robot.launch.py'])
     nav2_launch = PathJoinSubstitution(
         [pkg_mrbuggy3_nav2, 'launch', 'nav2.launch.py'])
+    corti_launch = PathJoinSubstitution(
+        [pkg_corti, 'launch', 'corti.launch.py'])
+    cerebri_launch = PathJoinSubstitution(
+        [pkg_cerebri, 'launch', 'cerebri.launch.py'])
     slam_launch = PathJoinSubstitution(
         [pkg_mrbuggy3_nav2, 'launch', 'slam.launch.py'])
     localization_launch = PathJoinSubstitution(
@@ -184,6 +195,20 @@ def generate_launch_description():
         ]
     )
 
+    # Cerebri
+    cerebri = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([cerebri_launch]),
+    )
+
+    # Corti
+    corti = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([corti_launch]),
+        condition=IfCondition(LaunchConfiguration('corti')),
+        launch_arguments=[
+            ('use_sim_time', LaunchConfiguration('use_sim_time'))
+        ]
+    )
+
     slam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([slam_launch]),
         condition=LaunchConfigurationEquals('localization', 'slam'),
@@ -202,19 +227,6 @@ def generate_launch_description():
         ]
     )
 
-    # RPLIDAR static transforms
-    #rplidar_stf = Node(
-    #    name='rplidar_stf',
-    #    package='tf2_ros',
-    #    executable='static_transform_publisher',
-    #    output='screen',
-    #    arguments=[
-    #        '--x', '0.0', '--y', '0.0', '--z', '0.0',
-    #        '--roll', '0.0', '--pitch', '0.0', '--yaw', '0.0',
-    #        '--frame-id', 'rplidar_link', '--child-frame-id', [LaunchConfiguration('robot_name'), '/rplidar_link/rplidar']],
-        #parameters=[{'use_sim_time': use_sim_time}],
-    #    )
-
     # Define LaunchDescription variable
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(param_file_cmd)
@@ -229,8 +241,9 @@ def generate_launch_description():
     ld.add_action(robot_description)
     ld.add_action(spawn_robot)
     ld.add_action(nav2)
+    ld.add_action(cerebri)
+    ld.add_action(corti)
     ld.add_action(slam)
     ld.add_action(localization)
-    #ld.add_action(rplidar_stf)
     return ld
 
