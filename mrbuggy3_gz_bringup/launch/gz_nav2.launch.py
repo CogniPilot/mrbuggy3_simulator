@@ -106,6 +106,7 @@ def generate_launch_description():
     cerebri = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([PathJoinSubstitution(
             [get_package_share_directory('cerebri_bringup'), 'launch', 'cerebri.launch.py'])]),
+        condition=IfCondition(LaunchConfiguration('cerebri')),
         launch_arguments=[('debugger', LaunchConfiguration('debugger')),
                           ('vehicle', 'mrbuggy3'),
                           ('uart_shell', LaunchConfiguration('uart_shell'))],
