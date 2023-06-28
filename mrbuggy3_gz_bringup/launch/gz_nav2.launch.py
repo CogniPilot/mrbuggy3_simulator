@@ -100,7 +100,10 @@ def generate_launch_description():
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([PathJoinSubstitution(
             [get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py'])]),
-        launch_arguments=[('gz_args', [LaunchConfiguration('world'), '.sdf', ' -v 1', ' -r'])]
+        launch_arguments=[('gz_args', [
+            LaunchConfiguration('world'), '.sdf', ' -v 1', ' -r',
+            ' --initial-sim-time 1690909200'
+            ])]
     )
 
     cerebri = IncludeLaunchDescription(
