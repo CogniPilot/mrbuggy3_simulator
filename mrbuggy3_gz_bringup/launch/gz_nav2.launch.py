@@ -101,8 +101,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([PathJoinSubstitution(
             [get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py'])]),
         launch_arguments=[('gz_args', [
-            LaunchConfiguration('world'), '.sdf', ' -v 1', ' -r',
-            ' --initial-sim-time 1690909200'
+            LaunchConfiguration('world'), '.sdf', ' -v 1', ' -r'
             ])]
     )
 
@@ -262,6 +261,7 @@ def generate_launch_description():
                 'mrbuggy3_nav2'), 'maps', LaunchConfiguration('map_yaml')]))])
 
     tf_to_odom = Node(
+        condition=IfCondition(LaunchConfiguration('corti')),
         package='corti',
         executable='tf_to_odom',
         output='screen',
