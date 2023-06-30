@@ -58,7 +58,7 @@ ARGUMENTS = [
         'map_yaml',
         default_value=[LaunchConfiguration('world'), '.yaml'],
         description='Map yaml'),
-    DeclareLaunchArgument('debugger', default_value='false',
+    DeclareLaunchArgument('cerebri_gdb', default_value='false',
                           choices=['true', 'false'],
                           description='Run cerebri with gdb debugger.'),
     DeclareLaunchArgument('uart_shell', default_value='false',
@@ -108,7 +108,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([PathJoinSubstitution(
             [get_package_share_directory('cerebri_bringup'), 'launch', 'cerebri.launch.py'])]),
         condition=IfCondition(LaunchConfiguration('cerebri')),
-        launch_arguments=[('debugger', LaunchConfiguration('debugger')),
+        launch_arguments=[('gdb', LaunchConfiguration('cerebri_gdb')),
                           ('vehicle', 'mrbuggy3'),
                           ('uart_shell', LaunchConfiguration('uart_shell'))],
     )
