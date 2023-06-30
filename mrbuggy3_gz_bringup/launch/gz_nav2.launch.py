@@ -37,6 +37,21 @@ ARGUMENTS = [
     DeclareLaunchArgument('cerebri', default_value='true',
                           choices=['true', 'false'],
                           description='Run cerebri'),
+    DeclareLaunchArgument('bridge', default_value='true',
+                          choices=['true', 'false'],
+                          description='Run bridges'),
+    DeclareLaunchArgument('synapse_ros', default_value='true',
+                          choices=['true', 'false'],
+                          description='Run synapse_ros'),
+    DeclareLaunchArgument('synapse_gz', default_value='true',
+                          choices=['true', 'false'],
+                          description='Run synapse_gz'),
+    DeclareLaunchArgument('joy', default_value='true',
+                          choices=['true', 'false'],
+                          description='Run joy'),
+    DeclareLaunchArgument('description', default_value='true',
+                          choices=['true', 'false'],
+                          description='Run description'),
     DeclareLaunchArgument('world', default_value='depot',
                           description='GZ World'),
     DeclareLaunchArgument(
@@ -65,15 +80,19 @@ def generate_launch_description():
     synapse_ros = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([PathJoinSubstitution(
             [get_package_share_directory('synapse_ros'), 'launch', 'synapse_ros.launch.py'])]),
+        condition=IfCondition(LaunchConfiguration('synapse_ros')),
         launch_arguments=[('host', ['192.0.2.1']),
-                          ('port', '4242')]
+                          ('port', '4242'),
+                          ('use_sim_time', LaunchConfiguration('use_sim_time'))]
     )
 
     synapse_gz = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([PathJoinSubstitution(
             [get_package_share_directory('synapse_gz'), 'launch', 'synapse_gz.launch.py'])]),
+        condition=IfCondition(LaunchConfiguration('synapse_gz')),
         launch_arguments=[('host', ['127.0.0.1']),
-                          ('port', '4241')],
+                          ('port', '4241'),
+                          ('use_sim_time', LaunchConfiguration('use_sim_time'))]
     )
 
     gz_sim = IncludeLaunchDescription(
@@ -81,6 +100,7 @@ def generate_launch_description():
             [get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py'])]),
         launch_arguments=[('gz_args', [
             LaunchConfiguration('world'), '.sdf', ' -v 0', ' -r'
+            ' --initial-sim-time', ' 1690909200'
             ])]
     )
 
@@ -94,11 +114,14 @@ def generate_launch_description():
     )
 
     joy = Node(
-        namespace='cerebri/in',
         package='joy',
         executable='joy_node',
         output='screen',
         arguments=['--ros-args', '--log-level', LaunchConfiguration('log_level')],
+        condition=IfCondition(LaunchConfiguration('joy')),
+        parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time')
+            }],
         remappings=[('/joy', '/cerebri/in/joy')]
     )
 
@@ -106,23 +129,24 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         output='screen',
-        arguments=[
-            '/clock' + '@rosgraph_msgs/msg/Clock' + '[gz.msgs.Clock',
-            '--ros-args', '--log-level', LaunchConfiguration('log_level')
-        ])
+        condition=IfCondition(LaunchConfiguration('bridge')),
+        parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time')
+            }],
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+    )
 
     lidar_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         output='screen',
+        condition=IfCondition(LaunchConfiguration('bridge')),
         parameters=[{
             'use_sim_time': LaunchConfiguration('use_sim_time')
         }],
         arguments=[
-            ['/world/default/model/mrbuggy3/link/lidar_link/sensor/lidar/scan' +
-             '@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
-             '--ros-args', '--log-level', LaunchConfiguration('log_level')
-             ]
+            '/world/default/model/mrbuggy3/link/lidar_link/sensor/lidar/scan' +
+             '@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan'
         ],
         remappings=[
             ('/world/default/model/mrbuggy3/link/lidar_link/sensor/lidar/scan',
@@ -133,12 +157,12 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         output='screen',
+        condition=IfCondition(LaunchConfiguration('bridge')),
         parameters=[{
             'use_sim_time': LaunchConfiguration('use_sim_time')
             }],
         arguments=[
-            '/model/mrbuggy3/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-            '--ros-args', '--log-level', LaunchConfiguration('log_level')
+            '/model/mrbuggy3/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry'
             ],
         remappings=[
             ('/model/mrbuggy3/odometry', '/odom')
@@ -149,12 +173,11 @@ def generate_launch_description():
         executable='parameter_bridge',
         output='screen',
         parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        condition=IfCondition(LaunchConfiguration('bridge')),
         arguments=[
            ['/model/mrbuggy3/pose' +
             '@tf2_msgs/msg/TFMessage' +
-            '[gz.msgs.Pose_V',
-            '--ros-args', '--log-level', LaunchConfiguration('log_level')
-            ]
+            '[gz.msgs.Pose_V']
         ],
         remappings=[
            (['/model/mrbuggy3/pose'], '/tf')
@@ -165,12 +188,11 @@ def generate_launch_description():
         executable='parameter_bridge',
         output='screen',
         parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        condition=IfCondition(LaunchConfiguration('bridge')),
         arguments=[
            ['/model/mrbuggy3/pose' +
             '@tf2_msgs/msg/TFMessage' +
-            '[gz.msgs.Pose_V',
-            '--ros-args', '--log-level', LaunchConfiguration('log_level')
-            ]
+            '[gz.msgs.Pose_V']
         ],
         remappings=[
            (['/model/mrbuggy3/pose'],
@@ -182,11 +204,13 @@ def generate_launch_description():
     robot_description = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([PathJoinSubstitution(
         [get_package_share_directory('mrbuggy3_description'), 'launch', 'robot_description.launch.py'])]),
+        condition=IfCondition(LaunchConfiguration('description')),
         launch_arguments=[('use_sim_time', LaunchConfiguration('use_sim_time'))])
 
     spawn_robot = Node(
         package='ros_gz_sim',
         executable='create',
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
         arguments=[
             '-world', 'default',
             '-name', 'mrbuggy3',
@@ -246,6 +270,7 @@ def generate_launch_description():
         parameters=[{
             'base_frame': 'map',
             'target_frame': 'base_link',
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
             }],
         remappings=[
             ('/odom', '/cerebri/in/odometry')
