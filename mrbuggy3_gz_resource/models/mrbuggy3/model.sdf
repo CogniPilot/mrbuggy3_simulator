@@ -469,20 +469,19 @@
       <odom_publish_frequency>30</odom_publish_frequency>
       <odom_frame>odom</odom_frame>
     </plugin>
-    <plugin filename="gz-sim-linearbatteryplugin-system"
-        name="gz::sim::systems::LinearBatteryPlugin">
-        <!--Li-ion battery spec from LIR18650 datasheet-->
-        <battery_name>linear_battery</battery_name>
-        <voltage>12.2</voltage>
-        <open_circuit_voltage_constant_coef>12.6</open_circuit_voltage_constant_coef>
-        <open_circuit_voltage_linear_coef>-3.0</open_circuit_voltage_linear_coef>
-        <initial_charge>4.8</initial_charge>
-        <capacity>5.0</capacity>
-        <resistance>0.07</resistance>
-        <smooth_current_tau>2.0</smooth_current_tau>
-        <soc_threshold>0.51</soc_threshold>
-        <power_load>36.0</power_load>
-        <start_drainign>true</start_drainign>
-      </plugin>
+    <plugin
+      filename="gz-sim-linearbatteryplugin-system"
+      name="gz::sim::systems::LinearBatteryPlugin">
+      <battery_name>linear_battery</battery_name>
+      <voltage>12.2</voltage>
+      <open_circuit_voltage_constant_coef>12.6</open_circuit_voltage_constant_coef>
+      <open_circuit_voltage_linear_coef>-3.0</open_circuit_voltage_linear_coef>
+      <initial_charge>48</initial_charge>
+      <!-- this plugin needs to be checked, manually set capacity for reasonable op. time -->
+      <capacity>50</capacity>
+      <resistance>0</resistance>
+      <smooth_current_tau>1.0</smooth_current_tau>
+      <power_load>60</power_load>
+    </plugin>
   </model>
 </sdf>
