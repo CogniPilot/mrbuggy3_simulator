@@ -473,6 +473,7 @@
       filename="gz-sim-linearbatteryplugin-system"
       name="gz::sim::systems::LinearBatteryPlugin">
       <battery_name>linear_battery</battery_name>
+      <voltage>12.6</voltage>
       <open_circuit_voltage_constant_coef>12.6</open_circuit_voltage_constant_coef>
       <open_circuit_voltage_linear_coef>-3.0</open_circuit_voltage_linear_coef>
       <initial_charge>4.8</initial_charge>
