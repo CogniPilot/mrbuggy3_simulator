@@ -275,6 +275,18 @@ def generate_launch_description():
             ('/odom', '/cerebri/in/odometry')
             ])
 
+    odom_to_tf = Node(
+        condition=IfCondition(LaunchConfiguration('corti')),
+        package='corti',
+        executable='odom_to_tf',
+        output='screen',
+        parameters=[{
+            'use_sim_time': LaunchConfiguration('use_sim_time'),
+            }],
+        remappings=[
+            ('/odom', '/cerebri/out/odometry')
+            ])
+
     # Define LaunchDescription variable
     return LaunchDescription(ARGUMENTS + [
         robot_description,
@@ -283,16 +295,17 @@ def generate_launch_description():
         gz_sim,
         cerebri,
         joy,
-        odom_bridge,
+        #odom_bridge,
         clock_bridge,
         lidar_bridge,
-        odom_base_tf_bridge,
-        pose_bridge,
+        #odom_base_tf_bridge,
+        #pose_bridge,
         rviz2,
         spawn_robot,
         nav2,
         corti,
         slam,
         localization,
-        tf_to_odom
+        #tf_to_odom,
+        odom_to_tf,
     ])

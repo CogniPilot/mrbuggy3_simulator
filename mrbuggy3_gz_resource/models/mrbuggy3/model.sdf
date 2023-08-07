@@ -302,7 +302,7 @@
         <gz_frame_id>lidar_link</gz_frame_id>
         <alwaysOn>1</alwaysOn>
         <visualize>true</visualize>
-        <update_rate>10</update_rate>
+        <update_rate>40</update_rate>
       </sensor>
     </link>
 
@@ -489,6 +489,16 @@
       filename="gz-sim-joint-state-publisher-system"
       name="gz::sim::systems::JointStatePublisher">
       <joint_name>RearRightwheelJoint</joint_name>
+      <joint_name>RearLeftwheelJoint</joint_name>
+      <joint_name>FrontRightwheelJoint</joint_name>
+      <joint_name>FrontLeftwheelJoint</joint_name>
+    </plugin>
+    <plugin
+      filename="gz-sim-joint-state-publisher-system"
+      name="gz::sim::systems::JointStatePublisher">
+      <joint_name>FrontRightwheelSteeringJoint</joint_name>
+      <joint_name>FrontLeftwheelSteeringJoint</joint_name>
+      <topic>steering</topic>
     </plugin>
   </model>
 </sdf>
