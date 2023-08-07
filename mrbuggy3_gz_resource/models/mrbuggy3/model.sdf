@@ -485,5 +485,10 @@
       <fix_issue_225>true</fix_issue_225>
       <start_draining>true</start_draining>
     </plugin>
+    <plugin
+      filename="gz-sim-joint-state-publisher-system"
+      name="gz::sim::systems::JointStatePublisher">
+      <joint_name>RearRightwheelJoint</joint_name>
+    </plugin>
   </model>
 </sdf>
