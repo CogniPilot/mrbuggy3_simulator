@@ -52,7 +52,7 @@ ARGUMENTS = [
     DeclareLaunchArgument('description', default_value='true',
                           choices=['true', 'false'],
                           description='Run description'),
-    DeclareLaunchArgument('world', default_value='depot',
+    DeclareLaunchArgument('world', default_value='basic_map',
                           description='GZ World'),
     DeclareLaunchArgument(
         'map_yaml',
