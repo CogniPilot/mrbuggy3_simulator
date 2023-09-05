@@ -92,6 +92,7 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('synapse_gz')),
         launch_arguments=[('host', ['127.0.0.1']),
                           ('port', '4241'),
+                          ('vehicle', 'mrbuggy3'),
                           ('use_sim_time', LaunchConfiguration('use_sim_time'))]
     )
 
