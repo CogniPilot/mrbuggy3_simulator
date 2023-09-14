@@ -301,8 +301,8 @@
         </lidar>
         <gz_frame_id>lidar_link</gz_frame_id>
         <alwaysOn>1</alwaysOn>
-        <visualize>true</visualize>
-        <update_rate>40</update_rate>
+        <visualize>false</visualize>
+        <update_rate>10</update_rate>
       </sensor>
     </link>
 
